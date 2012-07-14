@@ -2,6 +2,7 @@
 
 namespace ConsoleApplication1
 {
+    // Код, относящийся к примеру Abstract Factory
     internal abstract class CarFactory
         // взято http://msgeeks.ru/?artid=9
         /* К недостаткам паттерна Abstract Factory следует отнести то, что при расширении возможностей фабрики путем добавления 
@@ -114,6 +115,7 @@ namespace ConsoleApplication1
     }
 
     //-----------------------------------------------------------------
+    // Код, относящийся к примеру Template Method
     internal class Algorithm
         // взято http://www.dotsite.ru/solutions/patterns/TemplateMethod/
     {
@@ -152,6 +154,7 @@ namespace ConsoleApplication1
     }
 
     //------------------------------------
+    // Код, относящийся к примеру Bridge
     internal class Abstraction
         // Взято http://www.dotsite.ru/solutions/patterns/bridge/
     {
