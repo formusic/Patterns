@@ -14,18 +14,18 @@ namespace ConsoleApplication1
         public abstract AbstractEngine CreateEngine();
     }
 
-    internal class BMWFactory : CarFactory
+    internal class BmwFactory : CarFactory
         /*В результате у нас появился абстрактный класс с двумя методами, обеспечивающими получение соответствующих абстрактных объектов.
         Теперь реализуем первую конкретную фабрику, создающую класс, описывающий автомобиль BMW и двигатель для него:*/
     {
         public override AbstractCar CreateCar()
         {
-            return new BMWCar();
+            return new BmwCar();
         }
 
         public override AbstractEngine CreateEngine()
         {
-            return new BMWEngine();
+            return new BmwEngine();
         }
     }
 
@@ -57,7 +57,7 @@ namespace ConsoleApplication1
         public int MaxSpeed;
     }
 
-    internal class BMWCar : AbstractCar
+    internal class BmwCar : AbstractCar
         //Реализуем класс для автомобиля BMW:
     {
         public override void MaxSpeed(AbstractEngine engine)
@@ -66,10 +66,10 @@ namespace ConsoleApplication1
         }
     }
 
-    internal class BMWEngine : AbstractEngine
+    internal class BmwEngine : AbstractEngine
         //А затем определяем параметры его двигателя:
     {
-        public BMWEngine()
+        public BmwEngine()
         {
             MaxSpeed = 200;
         }
@@ -156,23 +156,29 @@ namespace ConsoleApplication1
     //------------------------------------
     // Код, относящийся к примеру Bridge
     internal class Abstraction
-        // Взято http://www.dotsite.ru/solutions/patterns/bridge/
+    // Взято http://www.dotsite.ru/solutions/patterns/bridge/
     {
-        protected Implementation ImpToUse;
+        private Implementation _impToUse;
 
-        public void SetImplementation(Implementation i)
+        public Implementation ImpToUse
         {
-            ImpToUse = i;
+            set { _impToUse = value; }
+            get { return _impToUse; }
         }
 
         public virtual void DumpString(string str)
         {
-            ImpToUse.DoStringOp(str);
+            _impToUse.DoStringOp(str);
         }
     }
 
     internal class DerivedAbstractionOne : Abstraction
     {
+        public DerivedAbstractionOne(Implementation currentImplementation)
+        {
+            ImpToUse = currentImplementation;
+        }
+
         public override void DumpString(string str)
         {
             str += ".com";
@@ -209,17 +215,16 @@ namespace ConsoleApplication1
 
     public class ClientForBridge
     {
-        private Abstraction SetupMyParticularAbstraction()
+        private Abstraction GetMyParticularAbstraction()
         {
-            Abstraction a = new DerivedAbstractionOne();
-            a.SetImplementation(new DerivedImplementationTwo());
+            Abstraction a = new DerivedAbstractionOne(new DerivedImplementationTwo());
             return a;
         }
 
-        public void MainForBridge()
+        public static void MainForBridge()
         {
             var c = new ClientForBridge();
-            Abstraction a = c.SetupMyParticularAbstraction();
+            Abstraction a = c.GetMyParticularAbstraction();
             a.DumpString("Clipcode");
         }
     }
@@ -229,7 +234,7 @@ namespace ConsoleApplication1
         private static void Main(string[] args)
         {
             // Абстрактная фабрика № 1
-            CarFactory bmwCar = new BMWFactory();
+            CarFactory bmwCar = new BmwFactory();
             var c1 = new Client(bmwCar);
             c1.Run();
             // Абстрактная фабрика № 2     
@@ -244,8 +249,7 @@ namespace ConsoleApplication1
             Console.WriteLine("");
 
             //пример Bridge 
-            var d = new ClientForBridge();
-            d.MainForBridge();
+            ClientForBridge.MainForBridge();
 
             Console.Read();
         }
