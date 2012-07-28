@@ -85,7 +85,7 @@ namespace ConsoleApplication1
             Assert.AreEqual(3, result);
         }
 
-        [Test, ExpectedException(typeof(NegativesNotAllowed),
+        [Test, ExpectedException(typeof (NegativesNotAllowed),
             ExpectedMessage = "Error: Negatives Not Allowed -2; -4")]
         public void ReturnExceptionForMinus()
         {
@@ -100,30 +100,23 @@ namespace ConsoleApplication1
     public class NegativesNotAllowed : Exception
     {
         public NegativesNotAllowed(string message)
-            : base(message) { }
+            : base(message)
+        {
+        }
     }
 
     public class StringCalculator
     {
         public int Add(string numbers)
         {
-            var delimeter = new List<char>();
-            if (numbers.Contains("//"))
-            {
-                delimeter.Add(Convert.ToChar(numbers.Split('/', '\n')[2]));
-            }
-            else
-            {
-                delimeter.Add(',');
-                delimeter.Add('\n');
-            }
-            string[] numbersWithSplits = numbers.Split(delimeter.ToArray());
-            var ints = numbersWithSplits.Select(s => Parse(s));
-            var negatives = ints.SkipWhile(s => s >= 0);
+            string delimeter = numbers.Contains("//") ? numbers.Split('/', '\n')[2] : ",\n";
+            string[] numbersWithSplits = numbers.Split(delimeter.ToCharArray());
+            IEnumerable<int> ints = numbersWithSplits.Select(s => Parse(s));
+            IEnumerable<int> negatives = ints.SkipWhile(s => s >= 0);
             if (negatives.Any())
             {
                 throw new NegativesNotAllowed("Error: Negatives Not Allowed "
-                  + String.Join("; ", negatives));
+                                              + String.Join("; ", negatives));
             }
             return ints.Sum(s => s);
         }
