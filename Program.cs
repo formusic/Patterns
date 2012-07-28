@@ -1,231 +1,138 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using NUnit.Framework;
 
 namespace ConsoleApplication1
 {
-    // Код, относящийся к примеру Abstract Factory
-    internal abstract class CarFactory
-        // взято http://msgeeks.ru/?artid=9
-        /* К недостаткам паттерна Abstract Factory следует отнести то, что при расширении возможностей фабрики путем добавления 
-        нового типа продуктов придется редактировать все конкретные реализации abstract factory, а это порой бывает 
-        недопустимо, например, если уже создано 100 конкретных фабрик.
-        сначала создадим абстрактную фабрику carfactory, содержащую семейство из двух объектов — автомобиля и двигателя для него.*/
+    // Conditions  http://osherove.com/tdd-kata-1/
+    public class SсTests
     {
-        public abstract AbstractCar CreateCar();
-        public abstract AbstractEngine CreateEngine();
-    }
-
-    internal class BmwFactory : CarFactory
-        /*В результате у нас появился абстрактный класс с двумя методами, обеспечивающими получение соответствующих абстрактных объектов.
-        Теперь реализуем первую конкретную фабрику, создающую класс, описывающий автомобиль BMW и двигатель для него:*/
-    {
-        public override AbstractCar CreateCar()
+        [Test]
+        public void ReturnZeroForEmpty()
         {
-            return new BmwCar();
+            // arrange
+            var calc = new StringCalculator();
+            // act
+            int result = calc.Add("");
+            // assert
+            Assert.AreEqual(0, result);
         }
 
-        public override AbstractEngine CreateEngine()
+        [Test]
+        public void ReturnFiveForFive()
         {
-            return new BmwEngine();
-        }
-    }
-
-    internal class AudiFactory : CarFactory
-        /*Сделаем то же самое для автомобиля марки Audi, чтобы у нас возникла вторая конкретная фабрика:*/
-    {
-        public override AbstractCar CreateCar()
-        {
-            return new AudiCar();
+            // arrange
+            var calc = new StringCalculator();
+            // act
+            int result = calc.Add("5");
+            // assert
+            Assert.AreEqual(5, result);
         }
 
-        public override AbstractEngine CreateEngine()
+        [Test]
+        public void Return6For4_2()
         {
-            return new AudiEngine();
-        }
-    }
-
-    internal abstract class AbstractCar
-        /* Теперь опишем абстрактный класс для наших автомобилей. В данном случае у них будет один метод, позволяющий узнать максимальную скорость машины.
-        С его помощью мы обратимся и ко второму объекту — двигателю: */
-    {
-        public abstract void MaxSpeed(AbstractEngine engine);
-    }
-
-    internal abstract class AbstractEngine
-        /* Все двигатели, в свою очередь, будут содержать один параметр — максимальную скорость. Эта простая общедоступная переменная позволит 
-            сократить объем программы в данном примере:  */
-    {
-        public int MaxSpeed;
-    }
-
-    internal class BmwCar : AbstractCar
-        //Реализуем класс для автомобиля BMW:
-    {
-        public override void MaxSpeed(AbstractEngine engine)
-        {
-            Console.WriteLine("Макcимальная скорость: " + engine.MaxSpeed.ToString());
-        }
-    }
-
-    internal class BmwEngine : AbstractEngine
-        //А затем определяем параметры его двигателя:
-    {
-        public BmwEngine()
-        {
-            MaxSpeed = 200;
-        }
-    }
-
-    internal class AudiCar : AbstractCar
-        //Проделаем то же самое для класса, описывающего автомобиль Audi:
-    {
-        public override void MaxSpeed(AbstractEngine engine)
-        {
-            Console.WriteLine("Макcимальная скорость: " + engine.MaxSpeed.ToString());
-        }
-    }
-
-    internal class AudiEngine : AbstractEngine
-        //Задаем двигатель для него:
-    {
-        public AudiEngine()
-        {
-            MaxSpeed = 180;
-        }
-    }
-
-    internal class Client
-        /* Теперь мы создадим класс Client, где покажем, как осуществляется работа с абстрактной фабрикой. 
-    В конструктор такого класса будут передаваться все конкретные фабрики, которые и начнут создавать объекты автомобиль и двигатель.
-    Следовательно, в конструктор класса Client допустимо передать любую конкретную фабрику, работающую с любыми марками автомобилей. 
-    А метод Run позволит узнать максимальную скорость конкретной машины.  */
-    {
-        private readonly AbstractCar _abstractCar;
-        private readonly AbstractEngine _abstractEngine;
-
-        public Client(CarFactory carFactory)
-        {
-            _abstractCar = carFactory.CreateCar();
-            _abstractEngine = carFactory.CreateEngine();
+            // arrange
+            var calc = new StringCalculator();
+            // act
+            int result = calc.Add("4,2");
+            // assert
+            Assert.AreEqual(6, result);
         }
 
-        public void Run()
+        [Test]
+        public void Return97For4_2_5_6_10_20_50()
         {
-            _abstractCar.MaxSpeed(_abstractEngine);
+            // arrange
+            var calc = new StringCalculator();
+            // act
+            int result = calc.Add("4,2,5,6,10,20,50");
+            // assert
+            Assert.AreEqual(97, result);
+        }
+
+        [Test]
+        public void Return6For1Enter2Zapataya3()
+        {
+            // arrange
+            var calc = new StringCalculator();
+            // act
+            int result = calc.Add("1\n2,3");
+            // assert
+            Assert.AreEqual(6, result);
+        }
+
+        [Test]
+        public void Return1For1Enter()
+        {
+            // arrange
+            var calc = new StringCalculator();
+            // act
+            int result = calc.Add("1\n");
+            // assert
+            Assert.AreEqual(1, result);
+        }
+
+        [Test]
+        public void ReturnSumForPredefinedDilimeter()
+        {
+            // arrange
+            var calc = new StringCalculator();
+            // act
+            int result = calc.Add("//;\n1;2");
+            // assert
+            Assert.AreEqual(3, result);
+        }
+
+        [Test, ExpectedException(typeof(NegativesNotAllowed),
+            ExpectedMessage = "Error: Negatives Not Allowed -2; -4")]
+        public void ReturnExceptionForMinus()
+        {
+            // arrange
+            var calc = new StringCalculator();
+            // act
+            calc.Add("//;\n1;-2;-4");
+            // assert in header
         }
     }
 
-    //-----------------------------------------------------------------
-    // Код, относящийся к примеру Template Method
-    internal class Algorithm
-        // взято http://www.dotsite.ru/solutions/patterns/TemplateMethod/
+    public class NegativesNotAllowed : Exception
     {
-        public void DoAlgorithm()
-        {
-            Console.WriteLine("In DoAlgorithm");
-            Console.WriteLine("In Algorithm - DoAlgoStep1");
-            Console.WriteLine("In Algorithm - DoAlgoStep2");
-            DoAlgoStep3();
-            Console.WriteLine("In Algorithm - DoAlgoStep4");
-            DoAlgoStep5();
-        }
-
-        public virtual void DoAlgoStep3()
-        {
-            Console.WriteLine("In Algorithm - DoAlgoStep3");
-        }
-
-        public virtual void DoAlgoStep5()
-        {
-            Console.WriteLine("In Algorithm - DoAlgoStep5");
-        }
+        public NegativesNotAllowed(string message)
+            : base(message) { }
     }
 
-    internal class CustomAlgorithm : Algorithm
+    public class StringCalculator
     {
-        public override void DoAlgoStep3()
+        public int Add(string numbers)
         {
-            Console.WriteLine("In CustomAlgorithm - DoAlgoStep3");
+            var delimeter = new List<char>();
+            if (numbers.Contains("//"))
+            {
+                delimeter.Add(Convert.ToChar(numbers.Split('/', '\n')[2]));
+            }
+            else
+            {
+                delimeter.Add(',');
+                delimeter.Add('\n');
+            }
+            string[] numbersWithSplits = numbers.Split(delimeter.ToArray());
+            var ints = numbersWithSplits.Select(s => Parse(s));
+            var negatives = ints.SkipWhile(s => s >= 0);
+            if (negatives.Any())
+            {
+                throw new NegativesNotAllowed("Error: Negatives Not Allowed "
+                  + String.Join("; ", negatives));
+            }
+            return ints.Sum(s => s);
         }
 
-        public override void DoAlgoStep5()
+        private static int Parse(string number)
         {
-            Console.WriteLine("In CustomAlgorithm - DoAlgoStep5");
-        }
-    }
-
-    //------------------------------------
-    // Код, относящийся к примеру Bridge
-    internal class Abstraction
-    // Взято http://www.dotsite.ru/solutions/patterns/bridge/
-    {
-        private Implementation _impToUse;
-
-        public Implementation ImpToUse
-        {
-            set { _impToUse = value; }
-            get { return _impToUse; }
-        }
-
-        public virtual void DumpString(string str)
-        {
-            _impToUse.DoStringOp(str);
-        }
-    }
-
-    internal class DerivedAbstractionOne : Abstraction
-    {
-        public DerivedAbstractionOne(Implementation currentImplementation)
-        {
-            ImpToUse = currentImplementation;
-        }
-
-        public override void DumpString(string str)
-        {
-            str += ".com";
-            ImpToUse.DoStringOp(str);
-        }
-    }
-
-    internal class Implementation
-    {
-        public virtual void DoStringOp(string str)
-        {
-            Console.WriteLine("Standard implementation - print string as is");
-            Console.WriteLine("string = {0}", str);
-        }
-    }
-
-    internal class DerivedImplementationOne : Implementation
-    {
-        public override void DoStringOp(string str)
-        {
-            Console.WriteLine("DerivedImplementation_One - don't print string");
-        }
-    }
-
-    internal class DerivedImplementationTwo : Implementation
-    {
-        public override void DoStringOp(string str)
-        {
-            Console.WriteLine("DerivedImplementation_Two - print string twice");
-            Console.WriteLine("string = {0}", str);
-            Console.WriteLine("string = {0}", str);
-        }
-    }
-
-    public class ClientForBridge
-    {
-        private Abstraction GetMyParticularAbstraction()
-        {
-            Abstraction a = new DerivedAbstractionOne(new DerivedImplementationTwo());
-            return a;
-        }
-
-        public static void MainForBridge()
-        {
-            var c = new ClientForBridge();
-            Abstraction a = c.GetMyParticularAbstraction();
-            a.DumpString("Clipcode");
+            int resultParse;
+            Int32.TryParse(number, out resultParse);
+            return resultParse;
         }
     }
 
@@ -233,25 +140,6 @@ namespace ConsoleApplication1
     {
         private static void Main(string[] args)
         {
-            // Абстрактная фабрика № 1
-            CarFactory bmwCar = new BmwFactory();
-            var c1 = new Client(bmwCar);
-            c1.Run();
-            // Абстрактная фабрика № 2     
-            CarFactory audiFactory = new AudiFactory();
-            var c2 = new Client(audiFactory);
-            c2.Run();
-            Console.WriteLine("");
-
-            //пример TemplateMethod 
-            var c = new CustomAlgorithm();
-            c.DoAlgorithm();
-            Console.WriteLine("");
-
-            //пример Bridge 
-            ClientForBridge.MainForBridge();
-
-            Console.Read();
         }
     }
 }
